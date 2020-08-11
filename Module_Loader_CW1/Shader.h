@@ -1,7 +1,7 @@
 #ifndef __SHADER_H__
 #define __SHADER_H__
 
-#include "GL/glew.h"
+#include"GL/glew.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -10,10 +10,11 @@ extern "C" {
 
 	typedef struct {
 		GLenum       type;
-		const char* filename;
+		const char * filename;
 		GLuint       shader;
-	} ShaderInfo;
-
+	} 
+	
+	ShaderInfo;
 	GLuint LoadShaders(ShaderInfo*);
 
 
