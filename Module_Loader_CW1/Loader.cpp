@@ -126,6 +126,38 @@ void loadObjFile(string fileName, vector<GLfloat>& outVertices, vector<GLfloat>&
 
 				//push vertex, textures and normals
 				//1
+				//data >> num;
+				//verInd[0] = num;
+				//data >> num;
+				//uvInd[0] = num;
+				//data >> num;
+				//normInd[0] = num;
+
+				////2
+				//data >> num;
+				//verInd[1] = num;
+				//data >> num;
+				//uvInd[1] = num;
+				//data >> num;
+				//normInd[1] = num;
+
+				////3
+				//data >> num;
+				//verInd[2] = num;
+				//data >> num;
+				//uvInd[2] = num;
+				//data >> num;
+				//normInd[2] = num;
+
+				////4
+				//data >> num;
+				//verInd[3] = num;
+				//data >> num;
+				//uvInd[3] = num;
+				//data >> num;
+				//normInd[3] = num;
+
+
 				data >> num;
 				verInd[0] = num;
 				data >> num;
@@ -133,7 +165,7 @@ void loadObjFile(string fileName, vector<GLfloat>& outVertices, vector<GLfloat>&
 				data >> num;
 				normInd[0] = num;
 
-				//2
+
 				data >> num;
 				verInd[1] = num;
 				data >> num;
@@ -141,7 +173,7 @@ void loadObjFile(string fileName, vector<GLfloat>& outVertices, vector<GLfloat>&
 				data >> num;
 				normInd[1] = num;
 
-				//3
+
 				data >> num;
 				verInd[2] = num;
 				data >> num;
@@ -149,7 +181,7 @@ void loadObjFile(string fileName, vector<GLfloat>& outVertices, vector<GLfloat>&
 				data >> num;
 				normInd[2] = num;
 
-				//4
+
 				data >> num;
 				verInd[3] = num;
 				data >> num;
@@ -200,17 +232,17 @@ void loadObjFile(string fileName, vector<GLfloat>& outVertices, vector<GLfloat>&
 		GLint vertexIndex = (vInd[i] - 1) * 3;		
 
 		outVertices.push_back(vert[vertexIndex]);
-		outVertices.push_back(vert[vertexIndex] + 1);
-		outVertices.push_back(vert[vertexIndex] + 2);
+		outVertices.push_back(vert[vertexIndex + 1]);
+		outVertices.push_back(vert[vertexIndex + 2]);
 
 		GLint normalIndex = (nInd[i] - 1) * 3;
 		outNormals.push_back(norm[normalIndex]);
-		outNormals.push_back(norm[normalIndex] + 1);
-		outNormals.push_back(norm[normalIndex] + 2);
+		outNormals.push_back(norm[normalIndex + 1]);
+		outNormals.push_back(norm[normalIndex + 2]);
 
 		GLint textureIndex = (tInd[i] - 1) * 2;
 		outTextures.push_back(text[textureIndex]);
-		outTextures.push_back(text[textureIndex] + 1);
+		outTextures.push_back(text[textureIndex + 1]);
 	}  //end of for
 	   	  
 }  //end of obj load file
