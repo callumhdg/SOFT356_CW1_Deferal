@@ -28,7 +28,7 @@ using namespace glm;
 enum VAOIDs { Cube, NumVAOs = 1 };
 enum BufferIDs { Tri, Col, Norm, Text, Ind, NumBuff = 5 };
 
-GLuint VAO[1];
+GLuint VAO[NumVAOs];
 GLuint Buff[NumBuff];
 GLuint texture1;
 GLuint shader;
@@ -125,39 +125,6 @@ void loadObjFile(string fileName, vector<GLfloat>& outVertices, vector<GLfloat>&
 				istringstream data(line.substr(2));
 
 				//push vertex, textures and normals
-				//1
-				//data >> num;
-				//verInd[0] = num;
-				//data >> num;
-				//uvInd[0] = num;
-				//data >> num;
-				//normInd[0] = num;
-
-				////2
-				//data >> num;
-				//verInd[1] = num;
-				//data >> num;
-				//uvInd[1] = num;
-				//data >> num;
-				//normInd[1] = num;
-
-				////3
-				//data >> num;
-				//verInd[2] = num;
-				//data >> num;
-				//uvInd[2] = num;
-				//data >> num;
-				//normInd[2] = num;
-
-				////4
-				//data >> num;
-				//verInd[3] = num;
-				//data >> num;
-				//uvInd[3] = num;
-				//data >> num;
-				//normInd[3] = num;
-
-
 				data >> num;
 				verInd[0] = num;
 				data >> num;
@@ -244,7 +211,35 @@ void loadObjFile(string fileName, vector<GLfloat>& outVertices, vector<GLfloat>&
 		outTextures.push_back(text[textureIndex]);
 		outTextures.push_back(text[textureIndex + 1]);
 	}  //end of for
+
+
+	/*for (int i = 0; i < vInd.size(); i++) {
+
+		int vi = (vInd[i] - 1) * 3;		
+		outVertices.push_back(vert[vi]);
+		outVertices.push_back(vert[vi + 1]);
+		outVertices.push_back(vert[vi + 2]);
+
+	}
+
+	for (int i = 0; i < tInd.size(); i++) {
+
+		int ti = (tInd[i] - 1) * 2;		
+		outTextures.push_back(text[ti]);
+		outTextures.push_back(text[ti + 1]);
+
+	}
+
+	for (int i = 0; i < nInd.size(); i++) {
+
+		int ni = (nInd[i] - 1) * 3;
+		outNormals.push_back(norm[ni]);
+		outNormals.push_back(norm[ni + 1]);
+		outNormals.push_back(norm[ni + 2]);
+
+	}*/
 	   	  
+	file.close();
 }  //end of obj load file
 
 
@@ -365,21 +360,21 @@ void initalise(vector<GLfloat>& vertices, vector<GLfloat>& textures, vector<GLfl
 	//lighting
 	vec4 ambient = vec4(colour[0], colour[1], colour[2], colour[3]);//ambient colour
 	GLuint ambientLocation = glGetUniformLocation(shader, "ambient");
-	glUniform3fv(ambientLocation, 1, value_ptr(ambient));//location, count, value
+ 	glUniform3fv(ambientLocation, 1, value_ptr(ambient));//location, count, value
 	
-	vec3 lightSource = vec3(-100.0f, 50.0f, 100.0f);
-	GLuint lightSourceLocation = glGetUniformLocation(shader, "lightSource");
+	vec3 lightSource = vec3(100.0f, 25.0f, 100.0f);
+	GLuint lightSourceLocation = glGetUniformLocation(shader, "lightSource");//problem with shader? -------------------------------------------------------------------------------------
 	glUniform3fv(lightSourceLocation, 1, value_ptr(lightSource));
 
 	vec3 diff = vec3(diffuse[0], diffuse[1], diffuse[2]);
-	GLuint diffuesLocation = glGetUniformLocation(shader, "diffuse");
+	GLuint diffuesLocation = glGetUniformLocation(shader, "diffuse");//problem with shader? ---------------------------------------------------------------------------------------------
 	glUniform3fv(diffuesLocation, 1, value_ptr(diff));
 
 	vec3 spec = vec3(specular[0], specular[1], specular[2]);
 	GLfloat shine = ns;
-	GLuint specularLightLocation = glGetUniformLocation(shader, "specularLightLocation");
+	GLuint specularLightLocation = glGetUniformLocation(shader, "specularLightLocation");//problem with shader? -------------------------------------------------------------------------
 	glUniform3fv(specularLightLocation, 1, value_ptr(spec));
-	GLuint specularShineLocation = glGetUniformLocation(shader, "specularShineLocation");
+	GLuint specularShineLocation = glGetUniformLocation(shader, "specularShineLocation");//problem with shader? -------------------------------------------------------------------------
 	glUniform3fv(specularShineLocation, 1, &shine);
 
 
@@ -454,10 +449,10 @@ void initalise(vector<GLfloat>& vertices, vector<GLfloat>& textures, vector<GLfl
 	modle = scale(modle, vec3(2.0f, 2.0f, 2.0f));
 
 	mat4 view = mat4(1.0f);
-	view = translate(view, vec3(0.0f, 0.0f, -4.0f));
+	view = translate(view, vec3(0.0f, 0.0f, 1.0f));
 
-	mat4 projection = perspective(45.0f, 4.0f / 3, 0.1f, 20.0f);
-	mat4 modleView = view * modle;
+	mat4 projection = perspective(45.0f, 4.0f / 3, 0.1f, 10.0f);
+	mat4 modleView = projection * view * modle;
 
 	int mvLocation = glGetUniformLocation(shader, "mvMatrix");
 	glUniformMatrix4fv(mvLocation, 1, GL_FALSE, value_ptr(modleView));

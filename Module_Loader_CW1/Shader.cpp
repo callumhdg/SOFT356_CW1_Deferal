@@ -22,15 +22,15 @@ extern "C" {
 		}
 
 		fseek(file, 0, SEEK_END);//file stream, ofset, origin
-		int elCount = ftell(file);
+		int len = ftell(file);//fix me? -----------------------------------------------------------------------------------------------------------------
 		fseek(file, 0, SEEK_SET);
-		GLchar* source = new GLchar[elCount + 1];
+		GLchar* source = new GLchar[len + 1];
 
-		fread(source, 1, elCount, file);//buffer, element size, element count, file stream
+		fread(source, 1, len, file);//buffer, element size, element count, file stream
 		fclose(file);//close reader
-		source[elCount] = 0;
+		source[len] = 0;
 
-		return const_cast <const GLchar*> (source);
+		return const_cast <const GLchar*> (source);//fix me? --------------------------------------------------------------------------------------------
 
 	}
 
