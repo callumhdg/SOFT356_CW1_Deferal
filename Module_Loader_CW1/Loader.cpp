@@ -362,19 +362,19 @@ void initalise(vector<GLfloat>& vertices, vector<GLfloat>& textures, vector<GLfl
 	GLuint ambientLocation = glGetUniformLocation(shader, "ambient");
  	glUniform3fv(ambientLocation, 1, value_ptr(ambient));//location, count, value
 	
-	vec3 lightSource = vec3(100.0f, 25.0f, 100.0f);
-	GLuint lightSourceLocation = glGetUniformLocation(shader, "lightSource");//problem with shader? -------------------------------------------------------------------------------------
-	glUniform3fv(lightSourceLocation, 1, value_ptr(lightSource));
+	vec3 lightPos = vec3(100.0f, 25.0f, 100.0f);
+	GLuint lightSourceLocation = glGetUniformLocation(shader, "lightPos");
+	glUniform3fv(lightSourceLocation, 1, value_ptr(lightPos));
 
 	vec3 diff = vec3(diffuse[0], diffuse[1], diffuse[2]);
-	GLuint diffuesLocation = glGetUniformLocation(shader, "diffuse");//problem with shader? ---------------------------------------------------------------------------------------------
+	GLuint diffuesLocation = glGetUniformLocation(shader, "dLight");
 	glUniform3fv(diffuesLocation, 1, value_ptr(diff));
 
 	vec3 spec = vec3(specular[0], specular[1], specular[2]);
 	GLfloat shine = ns;
-	GLuint specularLightLocation = glGetUniformLocation(shader, "specularLightLocation");//problem with shader? -------------------------------------------------------------------------
+	GLuint specularLightLocation = glGetUniformLocation(shader, "sLight");
 	glUniform3fv(specularLightLocation, 1, value_ptr(spec));
-	GLuint specularShineLocation = glGetUniformLocation(shader, "specularShineLocation");//problem with shader? -------------------------------------------------------------------------
+	GLuint specularShineLocation = glGetUniformLocation(shader, "sShine");
 	glUniform3fv(specularShineLocation, 1, &shine);
 
 
@@ -452,11 +452,12 @@ void initalise(vector<GLfloat>& vertices, vector<GLfloat>& textures, vector<GLfl
 	view = translate(view, vec3(0.0f, 0.0f, 1.0f));
 
 	mat4 projection = perspective(45.0f, 4.0f / 3, 0.1f, 10.0f);
-	mat4 modleView = projection * view * modle;
+	//mat4 modleView = projection * view * modle;
+	mat4 modleView = view * modle;
 
 	int mvLocation = glGetUniformLocation(shader, "mvMatrix");
 	glUniformMatrix4fv(mvLocation, 1, GL_FALSE, value_ptr(modleView));
-	int projectionLocation = glGetUniformLocation(shader, "projMatrix");
+	int projectionLocation = glGetUniformLocation(shader, "pMatrix");
 	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, value_ptr(projection));
 
 
@@ -481,8 +482,8 @@ void display(GLfloat delta) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	
 	mat4 modleMatrix = mat4(1.0f);
-	modleMatrix = scale(modleMatrix, vec3(1.0f, 1.0f, 1.0f));//modle size
-	modleMatrix = rotate(modleMatrix, radians(delta), vec3(0.0f, 0.0f, 0.0f));//modle orientation
+	modleMatrix = scale(modleMatrix, vec3(2.0f, 2.0f, 2.0f));//modle size
+	modleMatrix = rotate(modleMatrix, radians(delta), vec3(1.0f, 0.0f, 0.0f));//modle orientation
 
 	mat4 viewMatrix = lookAt(viewPosition, viewPosition + viewFront, viewTop);
 	viewMatrix = translate(viewMatrix, vec3(0.0f, 0.0f, -5.0f));//move the modle back 
