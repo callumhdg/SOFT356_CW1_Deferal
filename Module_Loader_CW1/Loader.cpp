@@ -207,11 +207,49 @@ void loadObjFile(string fileName, vector<GLfloat>& outVertices, vector<GLfloat>&
 		outNormals.push_back(norm[normalIndex + 1]);
 		outNormals.push_back(norm[normalIndex + 2]);
 
+		/*GLint textureIndex = (tInd[i] - 1) * 2;
+		outTextures.push_back(text[textureIndex]);
+		outTextures.push_back(text[textureIndex + 1]);*/
+
 		GLint textureIndex = (tInd[i] - 1) * 2;
 		outTextures.push_back(text[textureIndex]);
 		outTextures.push_back(text[textureIndex + 1]);
+
+
+
 	}  //end of for
 
+	
+	//for (int i = 0; i < tInd.size(); i++) {
+
+	//	int ti = tInd[i];
+
+	//	if (ti == 0 && not1 == false) {
+	//		//int ti = tInd[i];		
+
+	//		GLfloat texture = text[ti - 1];
+	//		outTextures.push_back(texture);
+
+	//		not1 = true;
+	//	}
+	//	else if (ti == 0 && not1 == true) {
+
+	//		GLfloat texture = text[ti];
+	//		outTextures.push_back(texture);
+
+	//	}
+	//	else {
+
+	//		GLfloat texture = text[ti - 1];
+	//		outTextures.push_back(texture);
+
+	//	}
+
+	//	//int ti = tInd[i];
+	//	/*GLfloat texture = text[ti - 1];
+	//	outTextures.push_back(texture);*/
+
+	//}
 
 	/*for (int i = 0; i < vInd.size(); i++) {
 
@@ -429,7 +467,7 @@ void initalise(vector<GLfloat>& vertices, vector<GLfloat>& textures, vector<GLfl
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-
+	stbi_set_flip_vertically_on_load(true);//puts object the right way up
 	GLint width;
 	GLint height;
 	GLint channels;
@@ -479,14 +517,17 @@ void display(GLfloat delta) {
 	static const float black[] = { 0.0f, 0.0f, 0.0f, 0.0f };//background colour
 
 	glClearBufferfv(GL_COLOR, 0, black);//buffer, draw buffer, const glFloat * value
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.0f, 1.0f, 1.0f, 0.0f);//debug/testing  //changes  background colour
+	glEnable(GL_CULL_FACE);
+
 	
 	mat4 modleMatrix = mat4(1.0f);
 	modleMatrix = scale(modleMatrix, vec3(2.0f, 2.0f, 2.0f));//modle size
-	modleMatrix = rotate(modleMatrix, radians(delta), vec3(1.0f, 0.0f, 0.0f));//modle orientation
+	modleMatrix = rotate(modleMatrix, radians(delta), vec3(0.2f, 1.0f, 0.0f));//modle orientation and spin
 
 	mat4 viewMatrix = lookAt(viewPosition, viewPosition + viewFront, viewTop);
-	viewMatrix = translate(viewMatrix, vec3(0.0f, 0.0f, -5.0f));//move the modle back 
+	viewMatrix = translate(viewMatrix, vec3(0.0f, 0.0f, -4.0f));//move the modle back 
 	mat4 projectionMatrix = perspective(radians(50.0f), (float)windowWidth / (float)windowHeight, 0.1f, 100.0f);//fov, aspect, near, far/n
 	mat4 modelView = viewMatrix * modleMatrix;
 
