@@ -398,7 +398,7 @@ void initalise(vector<GLfloat>& vertices, vector<GLfloat>& textures, vector<GLfl
 	//lighting
 	vec4 ambient = vec4(colour[0], colour[1], colour[2], colour[3]);//ambient colour
 	GLuint ambientLocation = glGetUniformLocation(shader, "ambient");
- 	glUniform3fv(ambientLocation, 1, value_ptr(ambient));//location, count, value
+ 	glUniform4fv(ambientLocation, 1, value_ptr(ambient));//location, count, value
 	
 	vec3 lightPos = vec3(100.0f, 25.0f, 100.0f);
 	GLuint lightSourceLocation = glGetUniformLocation(shader, "lightPos");
@@ -413,7 +413,7 @@ void initalise(vector<GLfloat>& vertices, vector<GLfloat>& textures, vector<GLfl
 	GLuint specularLightLocation = glGetUniformLocation(shader, "sLight");
 	glUniform3fv(specularLightLocation, 1, value_ptr(spec));
 	GLuint specularShineLocation = glGetUniformLocation(shader, "sShine");
-	glUniform3fv(specularShineLocation, 1, &shine);
+	glUniform1fv(specularShineLocation, 1, &shine);
 
 
 	//colours
