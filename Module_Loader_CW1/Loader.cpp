@@ -51,6 +51,9 @@ float lastY = 600.0f / 2.0;
 float yaw1 = -90.0f;//if set to 0 camera points right
 float pitch1 = 0.0f;
 
+float col1 = 0.0f;
+float col2 = 0.0f;
+float col3 = 0.0f;
 
 
 void loadObjFile(string fileName, vector<GLfloat>& outVertices, vector<GLfloat>& outTextures, vector<GLfloat>& outNormals) {
@@ -460,7 +463,7 @@ void display(GLfloat delta) {
 
 	glClearBufferfv(GL_COLOR, 0, black);//buffer, draw buffer, const glFloat * value
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.0f, 1.0f, 1.0f, 0.0f);//debug/testing  //changes  background colour
+	glClearColor(col1, col2, col3, 0.0f);//debug/testing  //changes  background colour
 	glEnable(GL_CULL_FACE);
 
 	
@@ -495,6 +498,7 @@ void buffCallback(GLFWwindow* window, int width, int height) {
 }
 
 
+//keyboard movement
 void handleInput1(GLFWwindow* window) {
 
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { // Close on exit
@@ -538,6 +542,39 @@ if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {//up
 }
 
 
+//change background colours
+void changeBackgroundColourUp(GLFWwindow* window) {
+
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && col1 != 1.0f) {//red
+		col1 = col1 + 0.01f;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS && col2 != 1.0f) {//green
+		col2 = col2 + 0.01f;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS && col3 != 1.0f) {//blue
+		col3 = col3 + 0.01f;
+	}
+}
+
+void changeBackgroundColourDown(GLFWwindow* window) {
+
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && col1 != 0.0f) {//red
+		col1 = col1 - 0.01f;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS && col2 != 0.0f) {//green
+		col2 = col2 - 0.01f;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS && col3 != 0.0f) {//blue
+		col3 = col3 - 0.01f;
+	}
+}
+
+
+//mouse movement
 void mouseInput(GLFWwindow* window, double xPos, double yPos) {
 
 	if (initMouse) {
@@ -576,6 +613,30 @@ void mouseInput(GLFWwindow* window, double xPos, double yPos) {
 }
 
 
+void printControlInfo() {
+	cout << "" << endl;
+	cout << "'Escape' key terminates the window" << endl;
+	cout << "" << endl;
+
+	cout << "'W' moves forwards" << endl;
+	cout << "'A' moves Left" << endl;
+	cout << "'S' moves backwards" << endl;
+	cout << "'D' moves right" << endl;
+	cout << "'Space' moves up" << endl;
+	cout << "'C' moves down" << endl;
+
+	cout << "" << endl;
+	cout << "'R' increases red background" << endl;
+	cout << "'F' decreases red background" << endl;
+	cout << "'T' increases green background" << endl;
+	cout << "'G' decreases green background" << endl;
+	cout << "'Y' increases blue background" << endl;
+	cout << "'H' decreases blue background" << endl;
+
+	cout << "" << endl;
+	cout << "Please enter 'creeper' to load object" << endl;
+	cout << "or enter 'info' for control information" << endl;
+}
 
 
 int main(int argc, char** argv) {
@@ -592,56 +653,65 @@ int main(int argc, char** argv) {
 	GLfloat ns;
 	string textureName;
 
-	cout << "Please enter 'creeper'" << endl;
+	cout << "Please enter 'creeper' to load object" << endl;
+	cout << "or enter 'info' for control information" << endl;
 	//loop or '2nd file' or '3rd file' etc.
 
-	/*try {*/ //catch bad input
 
 
 	while (true) {
 
 		cin >> file;
 
-		loadObjFile(file, verticies, textures, normals);
-		loadMtlFile(file, colour, diffuse, specular, ns, textureName);
+		if (file == "info") {
+			printControlInfo();
+		}
+		else if (file == "creeper") {
+					   
+			loadObjFile(file, verticies, textures, normals);
+			loadMtlFile(file, colour, diffuse, specular, ns, textureName);
 
-		glewExperimental = GL_TRUE;
-		glfwInit();
+			glewExperimental = GL_TRUE;
+			glfwInit();
 
-		GLFWwindow* window = glfwCreateWindow(800, 600, "Module Loader", NULL, NULL);//width, height, title
+			GLFWwindow* window = glfwCreateWindow(800, 600, "Module Loader", NULL, NULL);//width, height, title
 
-		glfwMakeContextCurrent(window);
-		glfwSetFramebufferSizeCallback(window, buffCallback); //resizing window wont crash
-		glfwSetCursorPosCallback(window, mouseInput);
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		glewInit();
+			glfwMakeContextCurrent(window);
+			glfwSetFramebufferSizeCallback(window, buffCallback); //resizing window wont crash
+			glfwSetCursorPosCallback(window, mouseInput);
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			glewInit();
 
-		initalise(verticies, textures, normals, textureName, colour, diffuse, specular, ns);
+			initalise(verticies, textures, normals, textureName, colour, diffuse, specular, ns);
 
-		GLfloat time = 0.0f;
+			GLfloat time = 0.0f;
 
-		while (!glfwWindowShouldClose(window)) {
+			while (!glfwWindowShouldClose(window)) {
 
-			//breaking these up allows for angled movement (left & up) instead of only one direction 
-			handleInput1(window);//z movement
-			handleInput2(window);//x movement
-			handleInput3(window);//y movement
-			display(time);
+				//breaking these up allows for angled movement (left & up) instead of only one direction 
+				handleInput1(window);//z movement
+				handleInput2(window);//x movement
+				handleInput3(window);//y movement
 
-			glfwSwapBuffers(window);
-			glfwPollEvents();
+				changeBackgroundColourUp(window);
+				changeBackgroundColourDown(window);
 
-			time += 0.1f;
+				display(time);
+
+				glfwSwapBuffers(window);
+				glfwPollEvents();
+
+				time += 0.1f;
+			}
+
+			glfwDestroyWindow(window);
+
+		}  
+		else {
+			cout << "Invalid input please try again" << endl;
 		}
 
-		glfwDestroyWindow(window);
-
-	}  //  end of while true
-	//}//end of try
-
-	/*catch (...){
-		cout << "invalid input" << endl;
-	}*/
+	}
 
 }  //  end of main
 
