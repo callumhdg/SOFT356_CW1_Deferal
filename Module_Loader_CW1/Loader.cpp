@@ -45,6 +45,11 @@ vec3 viewPosition = vec3(0.0f, 0.0f, 3.0f);//x, y, z
 vec3 viewFront    = vec3(0.0f, 0.0f,-1.0f);
 vec3 viewTop      = vec3(0.0f, 1.0f, 0.0f);
 
+bool initMouse = true;
+float lastX = 800.0f / 2.0;
+float lastY = 600.0f / 2.0;
+float yaw1 = -90.0f;//if set to 0 camera points right
+float pitch1 = 0.0f;
 
 
 
@@ -207,75 +212,12 @@ void loadObjFile(string fileName, vector<GLfloat>& outVertices, vector<GLfloat>&
 		outNormals.push_back(norm[normalIndex + 1]);
 		outNormals.push_back(norm[normalIndex + 2]);
 
-		/*GLint textureIndex = (tInd[i] - 1) * 2;
-		outTextures.push_back(text[textureIndex]);
-		outTextures.push_back(text[textureIndex + 1]);*/
-
 		GLint textureIndex = (tInd[i] - 1) * 2;
 		outTextures.push_back(text[textureIndex]);
 		outTextures.push_back(text[textureIndex + 1]);
 
 
-
 	}  //end of for
-
-	
-	//for (int i = 0; i < tInd.size(); i++) {
-
-	//	int ti = tInd[i];
-
-	//	if (ti == 0 && not1 == false) {
-	//		//int ti = tInd[i];		
-
-	//		GLfloat texture = text[ti - 1];
-	//		outTextures.push_back(texture);
-
-	//		not1 = true;
-	//	}
-	//	else if (ti == 0 && not1 == true) {
-
-	//		GLfloat texture = text[ti];
-	//		outTextures.push_back(texture);
-
-	//	}
-	//	else {
-
-	//		GLfloat texture = text[ti - 1];
-	//		outTextures.push_back(texture);
-
-	//	}
-
-	//	//int ti = tInd[i];
-	//	/*GLfloat texture = text[ti - 1];
-	//	outTextures.push_back(texture);*/
-
-	//}
-
-	/*for (int i = 0; i < vInd.size(); i++) {
-
-		int vi = (vInd[i] - 1) * 3;		
-		outVertices.push_back(vert[vi]);
-		outVertices.push_back(vert[vi + 1]);
-		outVertices.push_back(vert[vi + 2]);
-
-	}
-
-	for (int i = 0; i < tInd.size(); i++) {
-
-		int ti = (tInd[i] - 1) * 2;		
-		outTextures.push_back(text[ti]);
-		outTextures.push_back(text[ti + 1]);
-
-	}
-
-	for (int i = 0; i < nInd.size(); i++) {
-
-		int ni = (nInd[i] - 1) * 3;
-		outNormals.push_back(norm[ni]);
-		outNormals.push_back(norm[ni + 1]);
-		outNormals.push_back(norm[ni + 2]);
-
-	}*/
 	   	  
 	file.close();
 }  //end of obj load file
@@ -541,6 +483,9 @@ void display(GLfloat delta) {
 	glBindTexture(GL_TEXTURE_2D, texture1);
 	glDrawArrays(GL_TRIANGLES, 0, NumOfVertices);//mode, first num, size
 	
+
+
+
 }  //  end of display
 
 void buffCallback(GLFWwindow* window, int width, int height) {
@@ -550,7 +495,7 @@ void buffCallback(GLFWwindow* window, int width, int height) {
 }
 
 
-void handleInput(GLFWwindow* window) {
+void handleInput1(GLFWwindow* window) {
 
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { // Close on exit
 		glfwSetWindowShouldClose(window, true);
@@ -561,20 +506,76 @@ void handleInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {//forward
 		viewPosition += viewSpeed * viewFront;
 	}
+		
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {//backward
+		viewPosition += normalize(cross(viewFront, viewTop)) * viewSpeed;
+	}
 
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {//left
+}
+
+void handleInput2(GLFWwindow* window) {
+	float viewSpeed = 2.5 * deltaTime;
+
+if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {//left
 		viewPosition -= normalize(cross(viewFront, viewTop)) * viewSpeed;
 	}
 	
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {//right
 		viewPosition -= viewSpeed * viewFront;
 	}
-	
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {//backward
-		viewPosition += normalize(cross(viewFront, viewTop)) * viewSpeed;
-	}
-	
 }
+
+void handleInput3(GLFWwindow* window) {
+	float viewSpeed = 2.5 * deltaTime;
+
+if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {//up
+		viewPosition += viewTop * viewSpeed;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {//down
+		viewPosition -= viewTop * viewSpeed;
+	}
+}
+
+
+void mouseInput(GLFWwindow* window, double xPos, double yPos) {
+
+	if (initMouse) {
+
+		lastX = xPos;
+		lastY = yPos;
+		initMouse = false;
+	}
+
+	float xoffset = xPos - lastX;
+	float yoffset = lastY - yPos;
+	lastX = xPos;
+	lastY = yPos;
+
+	float sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	yaw1 += xoffset;
+	pitch1 += yoffset;
+
+	if (pitch1 > 89.0f) {
+		pitch1 = 89.0f;
+	}
+
+	if (pitch1 < -89.0f) {
+		pitch1 = -89.0f;
+	}
+
+	vec3 front;
+	front.x = cos(radians(yaw1)) * cos(radians(pitch1));
+	front.y = sin(radians(pitch1));
+	front.z = sin(radians(yaw1)) * cos(radians(pitch1));
+	viewFront = normalize(front);
+
+}
+
+
 
 
 int main(int argc, char** argv) {
@@ -611,6 +612,8 @@ int main(int argc, char** argv) {
 
 		glfwMakeContextCurrent(window);
 		glfwSetFramebufferSizeCallback(window, buffCallback); //resizing window wont crash
+		glfwSetCursorPosCallback(window, mouseInput);
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		glewInit();
 
 		initalise(verticies, textures, normals, textureName, colour, diffuse, specular, ns);
@@ -619,7 +622,10 @@ int main(int argc, char** argv) {
 
 		while (!glfwWindowShouldClose(window)) {
 
-			handleInput(window);
+			//breaking these up allows for angled movement (left & up) instead of only one direction 
+			handleInput1(window);//z movement
+			handleInput2(window);//x movement
+			handleInput3(window);//y movement
 			display(time);
 
 			glfwSwapBuffers(window);
