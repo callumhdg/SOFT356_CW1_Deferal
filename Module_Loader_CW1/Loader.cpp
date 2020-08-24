@@ -55,6 +55,9 @@ float col1 = 0.0f;
 float col2 = 0.0f;
 float col3 = 0.0f;
 
+float objXaxis = -2.0f;
+float objYaxis = 0.0f;
+float objZaxis = -4.0f;
 
 void loadObjFile(string fileName, vector<GLfloat>& outVertices, vector<GLfloat>& outTextures, vector<GLfloat>& outNormals) {
 
@@ -472,7 +475,7 @@ void display(GLfloat delta) {
 	modleMatrix = rotate(modleMatrix, radians(delta), vec3(0.2f, 1.0f, 0.0f));//modle orientation and spin
 
 	mat4 viewMatrix = lookAt(viewPosition, viewPosition + viewFront, viewTop);
-	viewMatrix = translate(viewMatrix, vec3(0.0f, 0.0f, -4.0f));//move the modle back 
+	viewMatrix = translate(viewMatrix, vec3(objXaxis, objYaxis, objZaxis));//move the modle back 
 	mat4 projectionMatrix = perspective(radians(50.0f), (float)windowWidth / (float)windowHeight, 0.1f, 100.0f);//fov, aspect, near, far/n
 	mat4 modelView = viewMatrix * modleMatrix;
 
@@ -487,7 +490,19 @@ void display(GLfloat delta) {
 	glDrawArrays(GL_TRIANGLES, 0, NumOfVertices);//mode, first num, size
 	
 
+	//second stationary object
+	mat4 modleMatrix1 = mat4(1.0f);
+	mat4 viewMatrix1 = lookAt(viewPosition, viewPosition + viewFront, viewTop);
+	viewMatrix1 = translate(viewMatrix1, vec3(0.0f, 0.0f, -3.0f));
+	modleMatrix1 = translate(modleMatrix1, vec3(-1.5f, 0.0f, 0.0f));
+	mat4 projectionMatrix1 = perspective(radians(50.0f), (float)windowWidth / (float)windowHeight, 0.1f, 100.0f);
 
+	viewMatrix1 = rotate(viewMatrix1, radians(180.0f), vec3(0.0, 1.0, 0.0));//makes second object face forwards
+
+	mat4 modelView1 = viewMatrix1 * modleMatrix1;
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, value_ptr(modelView1));
+	glUniformMatrix4fv(pLoc, 1, GL_FALSE, value_ptr(projectionMatrix1));
+	glDrawArrays(GL_TRIANGLES, 0, NumOfVertices);
 
 }  //  end of display
 
@@ -574,6 +589,44 @@ void changeBackgroundColourDown(GLFWwindow* window) {
 }
 
 
+//move object
+void moveObj1(GLFWwindow* window) {//z inverted (left and right from users perspective)
+
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+		objZaxis = objZaxis - 0.01f;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+		objZaxis = objZaxis + 0.01f;
+	}
+
+}
+
+void moveObj2(GLFWwindow* window) {//x inverted (left and right from users perspective)
+
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+		objXaxis = objXaxis - 0.01f;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+		objXaxis = objXaxis + 0.01f;
+	}
+
+}
+
+void moveObj3(GLFWwindow* window) {//y 
+
+	if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS) {
+		objYaxis = objYaxis + 0.01f;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS) {
+		objYaxis = objYaxis - 0.01f;
+	}
+
+}
+
+
 //mouse movement
 void mouseInput(GLFWwindow* window, double xPos, double yPos) {
 
@@ -616,14 +669,14 @@ void mouseInput(GLFWwindow* window, double xPos, double yPos) {
 void printControlInfo() {
 	cout << "" << endl;
 	cout << "'Escape' key terminates the window" << endl;
-	cout << "" << endl;
 
-	cout << "'W' moves forwards" << endl;
-	cout << "'A' moves Left" << endl;
-	cout << "'S' moves backwards" << endl;
-	cout << "'D' moves right" << endl;
-	cout << "'Space' moves up" << endl;
-	cout << "'C' moves down" << endl;
+	cout << "" << endl;
+	cout << "'W' moves camera forwards" << endl;
+	cout << "'A' moves camera Left" << endl;
+	cout << "'S' moves camera backwards" << endl;
+	cout << "'D' moves camera right" << endl;
+	cout << "'Space' moves camera up" << endl;
+	cout << "'C' moves camera down" << endl;
 
 	cout << "" << endl;
 	cout << "'R' increases red background" << endl;
@@ -632,6 +685,14 @@ void printControlInfo() {
 	cout << "'G' decreases green background" << endl;
 	cout << "'Y' increases blue background" << endl;
 	cout << "'H' decreases blue background" << endl;
+
+	cout << "" << endl;
+	cout << "'Up arrow' moves object forwards" << endl;
+	cout << "'Left arrow' moves object Left" << endl;
+	cout << "'Down arrow' moves object backwards" << endl;
+	cout << "'Right arrow' moves object right" << endl;
+	cout << "'Page up' moves object up" << endl;
+	cout << "'Page down' moves object down" << endl;
 
 	cout << "" << endl;
 	cout << "Please enter 'creeper' to load object" << endl;
@@ -684,17 +745,36 @@ int main(int argc, char** argv) {
 
 			initalise(verticies, textures, normals, textureName, colour, diffuse, specular, ns);
 
+			//reset camera view when loading object
+			viewPosition = vec3(0.0f, 0.0f, 3.0f);
+			viewFront = vec3(0.0f, 0.0f, -1.0f);
+			viewTop = vec3(0.0f, 1.0f, 0.0f);
+
+			//reset movable object location
+			objXaxis = -2.0f;
+			objYaxis = 0.0f;
+			objZaxis = -4.0f;
+
+			//reset background colour
+			col1 = 0.0f;
+			col2 = 0.0f;
+			col3 = 0.0f;
+					   
 			GLfloat time = 0.0f;
 
 			while (!glfwWindowShouldClose(window)) {
 
 				//breaking these up allows for angled movement (left & up) instead of only one direction 
-				handleInput1(window);//z movement
-				handleInput2(window);//x movement
-				handleInput3(window);//y movement
+				handleInput1(window);//z camera movement
+				handleInput2(window);//x camera movement
+				handleInput3(window);//y camera movement
 
-				changeBackgroundColourUp(window);
-				changeBackgroundColourDown(window);
+				changeBackgroundColourUp(window);//increace colour values
+				changeBackgroundColourDown(window);//decrease colour values
+
+				moveObj1(window);//z object movement
+				moveObj2(window);//x object movement
+				moveObj3(window);//y object movement
 
 				display(time);
 
